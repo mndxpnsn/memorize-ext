@@ -10,6 +10,8 @@ import SwiftUI
 
 struct Theme: Identifiable, Equatable {
     var emojis: [String]
+    var emojis_str: String
+    var theme_color: Color
     var id: Int
 }
 
@@ -48,13 +50,14 @@ class EmojiMemoryGame: ObservableObject {
     
     static func add_theme(emojis: Array<String>, num_pairs: Int, color: Color) {
 
-        var emojis_loc = Theme(emojis: [], id: theme_counter)
+        var emojis_loc = Theme(emojis: [], emojis_str: "", theme_color: color, id: theme_counter)
         let num_pairs = emojis.count
         
         emojis_loc.id = theme_counter
         
         for index in 0..<num_pairs {
             emojis_loc.emojis.append(emojis[index])
+            emojis_loc.emojis_str = emojis_loc.emojis_str + emojis[index]
         }
         
         emoji_themes.append(emojis_loc)
