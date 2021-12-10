@@ -10,6 +10,7 @@ import SwiftUI
 struct Game: View {
     @ObservedObject var viewModel: EmojiMemoryGame
     @State var theme_id: Int
+    
     var body: some View {
         let color = get_color_of_theme_with(id: theme_id)
         VStack {
@@ -45,7 +46,7 @@ struct Game: View {
         return Text(prefix + suffix)
     }
     
-    func set_theme(id: Int) {
+    func set_theme(id: Int) -> Void {
         EmojiMemoryGame.set_theme(id: id)
     }
     

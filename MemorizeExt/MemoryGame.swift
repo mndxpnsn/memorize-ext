@@ -102,7 +102,7 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
 
         score = 0
         numberOfCards = num_cards
-        
+        print("new game bro")
         new_cards(num_cards: num_cards, createCardContent: cardContent)
         
         let randArray = get_unique_random_array(size: num_cards)
