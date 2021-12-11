@@ -19,9 +19,14 @@ struct ThemeEditor: View {
         .navigationTitle("Edit ")
     }
     
+    @State private var name_to_change = ""
+    
     var nameSection: some View {
         Section(header: Text("Name")) {
-            Text(String(viewModel.get_actual_theme().id))
+            TextField("", text: $name_to_change)
+                .onChange(of: name_to_change) {text in
+                    change_to_name(text: text)
+                }
         }
     }
     
@@ -43,6 +48,13 @@ struct ThemeEditor: View {
         }
     }
 
+    func change_to_name(text: String) {
+        withAnimation {
+            let theme_id = viewModel.get_theme()
+            viewModel.change_to_name(theme: theme_id, text: text)
+        }
+    }
+    
     var removeEmojiSection: some View {
         Section(header: Text("Remove Emoji")) {
             let theme_id = viewModel.get_theme()
