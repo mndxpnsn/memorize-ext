@@ -9,7 +9,6 @@
 import SwiftUI
 
 struct Theme: Identifiable, Equatable, Hashable {
-//    var emojis: [String]
     var emojis_str: String
     var theme_color: Color
     var id: Int
@@ -54,7 +53,10 @@ func create_card_content (index: Int) -> String {
 }
 
 func createMemoryGame() -> MemoryGame<String> {
-    set_emoji_themes()
+    if init_set == false {
+        set_emoji_themes()
+        init_set = true
+    }
 
     return MemoryGame<String>(numberOfPairsOfCards: emoji_themes_glb[theme].emojis_str.count, createCardContent: create_card_content)
 }
@@ -157,7 +159,10 @@ class EmojiMemoryGame: ObservableObject {
     }
     
     init() {
-        set_emoji_themes()
+        if init_set == false {
+            set_emoji_themes()
+            init_set = true
+        }
         
         emoji_themes = emoji_themes_glb
     }
@@ -181,6 +186,13 @@ class EmojiMemoryGame: ObservableObject {
             let index_str_upb = emoji_themes[theme].emojis_str.index(emoji_themes[theme].emojis_str.startIndex, offsetBy: index + 1)
             return String(emoji_themes[theme].emojis_str[index_str..<index_str_upb])
         }
+    }
+    
+    func add_new_theme() {
+        let num_themes = emoji_themes.count
+        let new_theme = Theme(emojis_str: "", theme_color: Color.cyan, id: num_themes)
+        emoji_themes.append(new_theme)
+        theme_colors.append(Color.cyan)
     }
     
     func new_game_with_id(id: Int) {
