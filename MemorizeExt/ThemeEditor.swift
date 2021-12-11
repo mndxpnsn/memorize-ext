@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ThemeEditor: View {
     @ObservedObject var viewModel: EmojiMemoryGame
+//    @Binding var theme_binding: Theme
+    
     var body: some View {
         Form {
             nameSection
@@ -24,7 +26,7 @@ struct ThemeEditor: View {
         }
     }
     
-    @State private var emojisToAdd = "anything"
+    @State private var emojisToAdd = ""
     
     var addEmojisSection: some View {
         Section(header: Text("Add Emojis")) {
@@ -46,13 +48,13 @@ struct ThemeEditor: View {
         Section(header: Text("Remove Emoji")) {
             let theme_id = viewModel.get_theme()
             let emojis = viewModel.get_emojis_of_theme(theme_id: theme_id)
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 40))]) {
-                ForEach(emojis, id: \.self) { emoji in
-                    Text(emoji)
+            LazyHGrid(rows: [GridItem(.adaptive(minimum: 40))]) {
+                ForEach(Array(emojis), id: \.self) { emoji in
+                    Text(String(emoji))
                         .onTapGesture {
-//                            withAnimation {
-//                                palette.emojis.removeAll(where: { String($0) == emoji })
-//                            }
+                            withAnimation {
+                                viewModel.remove_emoji(emoji: (emoji))
+                            }
                         }
                 }
             }

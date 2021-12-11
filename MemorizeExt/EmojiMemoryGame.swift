@@ -8,8 +8,8 @@
 //import Foundation
 import SwiftUI
 
-struct Theme: Identifiable, Equatable {
-    var emojis: [String]
+struct Theme: Identifiable, Equatable, Hashable {
+//    var emojis: [String]
     var emojis_str: String
     var theme_color: Color
     var id: Int
@@ -48,27 +48,28 @@ func set_emoji_themes() {
 var emoji_themes_glb: [Theme] = [Theme]()
 
 func create_card_content (index: Int) -> String {
-    return emoji_themes_glb[theme].emojis[index]
+    let index_str = emoji_themes_glb[theme].emojis_str.index(emoji_themes_glb[theme].emojis_str.startIndex, offsetBy: index)
+    let index_str_upb = emoji_themes_glb[theme].emojis_str.index(emoji_themes_glb[theme].emojis_str.startIndex, offsetBy: index + 1)
+    return String(emoji_themes_glb[theme].emojis_str[index_str..<index_str_upb])
 }
 
 func createMemoryGame() -> MemoryGame<String> {
     set_emoji_themes()
 
-    return MemoryGame<String>(numberOfPairsOfCards: emoji_themes_glb[theme].emojis.count, createCardContent: create_card_content)
+    return MemoryGame<String>(numberOfPairsOfCards: emoji_themes_glb[theme].emojis_str.count, createCardContent: create_card_content)
 }
 
 func add_theme(emojis: Array<String>, num_pairs: Int, color: Color) {
 
-    var emojis_loc = Theme(emojis: [], emojis_str: "", theme_color: color, id: theme_counter)
+    var emojis_loc = Theme(emojis_str: "", theme_color: color, id: theme_counter)
     let num_pairs = emojis.count
     
     emojis_loc.id = theme_counter
     
     for index in 0..<num_pairs {
-        emojis_loc.emojis.append(emojis[index])
+//        emojis_loc.emojis.append(emojis[index])
         emojis_loc.emojis_str = emojis_loc.emojis_str + emojis[index]
     }
-    
     emoji_themes_glb.append(emojis_loc)
     theme_colors.append(color)
     
@@ -92,8 +93,12 @@ class EmojiMemoryGame: ObservableObject {
         return emoji_themes[theme]
     }
     
-    func get_emojis_of_theme(theme_id: Int) -> [String] {
-        return emoji_themes[theme_id].emojis
+//    func get_emojis_of_theme(theme_id: Int) -> [String] {
+//        return emoji_themes[theme_id].emojis
+//    }
+    
+    func get_emojis_of_theme(theme_id: Int) -> String {
+        return String(emoji_themes[theme_id].emojis_str)
     }
     
     func get_unique_random_array(size: Int, diff: Int) -> Array<Int> {
@@ -107,13 +112,52 @@ class EmojiMemoryGame: ObservableObject {
     }
     
     func add_emojis(theme: Int, emojis_str: String) {
-        let size_str = emojis_str.count
-        emoji_themes[theme].emojis_str += emojis_str
-        
-        for index in 0..<size_str {
-            let index_str = emojis_str.index(emojis_str.startIndex, offsetBy: index)
-            emoji_themes[theme].emojis.append(String(emojis_str[index_str]))
+        withAnimation {
+            emoji_themes[theme].emojis_str = (emojis_str + emoji_themes[theme].emojis_str)
         }
+        let num_emoji = emoji_themes[theme].emojis_str.count
+        remove_repeating_emoji(num_emoji: num_emoji)
+    }
+    
+    func remove_emoji(emoji: Character) {
+        var emojis_loc = ""
+        let num_emoji = emoji_themes[theme].emojis_str.count
+        
+        for index in 0..<num_emoji {
+            let index_ref = emoji_themes[theme].emojis_str.index(emoji_themes[theme].emojis_str.startIndex, offsetBy: index)
+            let ref_elem = emoji_themes[theme].emojis_str[index_ref]
+            if ref_elem == emoji {
+                
+            }
+            else {
+                emojis_loc = emojis_loc + String(ref_elem)
+            }
+        }
+        
+        emoji_themes[theme].emojis_str = emojis_loc
+    }
+    
+    func remove_repeating_emoji(num_emoji: Int) {
+        var emojis_loc = ""
+        
+        for i in 0..<num_emoji {
+            let index_ref = emoji_themes[theme].emojis_str.index(emoji_themes[theme].emojis_str.startIndex, offsetBy: i)
+            var is_not_duplicate = true
+            for j in 0..<i {
+                let index_curr = emoji_themes[theme].emojis_str.index(emoji_themes[theme].emojis_str.startIndex, offsetBy: j)
+                let ref_elem = emoji_themes[theme].emojis_str[index_ref]
+                let curr_elem = emoji_themes[theme].emojis_str[index_curr]
+                let is_duplicate = ref_elem == curr_elem
+                if is_duplicate {
+                    is_not_duplicate = false
+                }
+            }
+            if is_not_duplicate {
+                emojis_loc = emojis_loc + String(emoji_themes[theme].emojis_str[index_ref])
+            }
+        }
+        
+        emoji_themes[theme].emojis_str = emojis_loc
     }
     
     init() {
@@ -134,17 +178,22 @@ class EmojiMemoryGame: ObservableObject {
     }
     
     func new_game() {
-        model.new_game(num_cards: emoji_themes[theme].emojis.count * 2) {
+        model.new_game(num_cards: emoji_themes[theme].emojis_str.count * 2) {
             index in
-            return emoji_themes[theme].emojis[index]
+            
+            let index_str = emoji_themes[theme].emojis_str.index(emoji_themes[theme].emojis_str.startIndex, offsetBy: index)
+            let index_str_upb = emoji_themes[theme].emojis_str.index(emoji_themes[theme].emojis_str.startIndex, offsetBy: index + 1)
+            return String(emoji_themes[theme].emojis_str[index_str..<index_str_upb])
         }
     }
     
     func new_game_with_id(id: Int) {
         theme = id
-        model.new_game(num_cards: emoji_themes[theme].emojis.count * 2) {
+        model.new_game(num_cards: emoji_themes[theme].emojis_str.count * 2) {
             index in
-            return emoji_themes[theme].emojis[index]
+            let index_str = emoji_themes[theme].emojis_str.index(emoji_themes[theme].emojis_str.startIndex, offsetBy: index)
+            let index_str_upb = emoji_themes[theme].emojis_str.index(emoji_themes[theme].emojis_str.startIndex, offsetBy: index + 1)
+            return String(emoji_themes[theme].emojis_str[index_str..<index_str_upb])
         }
     }
     
