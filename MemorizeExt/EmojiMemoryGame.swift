@@ -93,10 +93,6 @@ class EmojiMemoryGame: ObservableObject {
         return emoji_themes[theme]
     }
     
-//    func get_emojis_of_theme(theme_id: Int) -> [String] {
-//        return emoji_themes[theme_id].emojis
-//    }
-    
     func get_emojis_of_theme(theme_id: Int) -> String {
         return String(emoji_themes[theme_id].emojis_str)
     }

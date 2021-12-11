@@ -2,14 +2,13 @@
 //  ThemeEditor.swift
 //  MemorizeExt
 //
-//  Created by Derek Harrison on 10/12/2021.
+//  Created by mndx on 10/12/2021.
 //
 
 import SwiftUI
 
 struct ThemeEditor: View {
     @ObservedObject var viewModel: EmojiMemoryGame
-//    @Binding var theme_binding: Theme
     
     var body: some View {
         Form {
