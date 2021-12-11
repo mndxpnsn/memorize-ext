@@ -47,7 +47,7 @@ struct Game: View {
     }
     
     func set_theme(id: Int) -> Void {
-        EmojiMemoryGame.set_theme(id: id)
+        viewModel.set_theme(id: id)
     }
     
     func theme_title_with(id: Int) -> Text {
