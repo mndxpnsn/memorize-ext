@@ -7,14 +7,14 @@
 
 import Foundation
 
-struct MemoryGame<CardContent> where CardContent: Equatable {
+struct MemoryGame: Codable {
     private(set) var cards: Array<Card>
     
     private var indexOfTheOneAndOnlyFaceUpCard: Int?
     private var numberOfCards: Int
     private var score: Int
     
-    init(numberOfPairsOfCards: Int, createCardContent: (Int) -> CardContent) {
+    init(numberOfPairsOfCards: Int, createCardContent: (Int) -> String) {
         cards = Array<Card>()
         numberOfCards = 2 * numberOfPairsOfCards
         score = 0
@@ -24,7 +24,7 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
         for index in 0..<numberOfCards {
             let index_loc = randArray[index]
             let pairIndex = index_loc / 2
-            let content: CardContent = createCardContent(pairIndex)
+            let content: String = createCardContent(pairIndex)
             cards.append(Card(content: content, id: index))
         }
     }
@@ -84,7 +84,7 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
         return nil
     }
     
-    mutating func new_cards(num_cards: Int, createCardContent: (Int) -> CardContent) {
+    mutating func new_cards(num_cards: Int, createCardContent: (Int) -> String) {
         cards = Array<Card>()
         numberOfCards = num_cards
         
@@ -93,16 +93,16 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
         for index in 0..<num_cards {
             let index_loc = randArray[index]
             let pairIndex = index_loc / 2
-            let content: CardContent = createCardContent(pairIndex)
+            let content: String = createCardContent(pairIndex)
             cards.append(Card(content: content, id: index))
         }
     }
     
-    mutating func new_game(num_cards: Int, cardContent: (Int) -> CardContent) {
+    mutating func new_game(num_cards: Int, cardContent: (Int) -> String) {
 
         score = 0
         numberOfCards = num_cards
-        
+        print("new game bro")
         new_cards(num_cards: num_cards, createCardContent: cardContent)
         
         let randArray = get_unique_random_array(size: num_cards)
@@ -116,11 +116,11 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
         indexOfTheOneAndOnlyFaceUpCard = nil
     }
     
-    struct Card: Identifiable {
+    struct Card: Identifiable, Codable {
         var isFaceUp: Bool = false
         var isMatched: Bool = false
         var isSeen: Bool = false
-        var content: CardContent
+        var content: String
         var id: Int
     }
 }
