@@ -18,6 +18,7 @@ struct Theme: Identifiable, Equatable {
 
 var init_set = false
 var state_read = false
+
 let emojis_theme1 = ["🚂", "🚀", "🚁", "🚜", "🚗", "🚄", "🛵", "🚅"]
 let emojis_theme2 = ["🚗", "🚄", "🛵", "🚅", "🚂", "🚀", "🚁", "🚜"]
 let emojis_theme3 = ["🏎", "🚍", "🗿", "🕍", "🚗", "🚄", "🛵", "🚅"]
@@ -29,6 +30,7 @@ let numberOfPairsOfCardsGlb = 8
 var theme_colors: Array<Color> = Array<Color>()
 var theme: Int = 0
 var theme_counter: Int = 0
+var max_theme_color_id: Int = 0
 
 func set_emoji_themes() {
     add_theme(emojis: emojis_theme1, num_pairs: numberOfPairsOfCardsGlb, theme_name: "Theme 1")
@@ -76,6 +78,8 @@ func add_theme(emojis: Array<String>, num_pairs: Int, theme_name: String) {
         emojis_loc.emojis_str = emojis_loc.emojis_str + emojis[index]
     }
     
+    max_theme_color_id = theme_counter
+
     emoji_themes_glb.append(emojis_loc)
     theme_colors.append(emojis_loc.theme_color)
     
@@ -94,6 +98,17 @@ func read_state() {
         do {
             let num = try String(contentsOf: fileURL_num_themes, encoding: .utf8)
             num_themes = Int(num) ?? 0
+        }
+        catch { print("num themes not read") }
+        
+        //Read max color id
+        let file_max_color_id = "max_color_id"
+        let fileURL_max_color_id = dir.appendingPathComponent(file_max_color_id)
+        
+        //reading
+        do {
+            let max_color_id_loc = try String(contentsOf: fileURL_max_color_id, encoding: .utf8)
+            max_theme_color_id = Int(max_color_id_loc) ?? 0
         }
         catch { print("num themes not read") }
         
@@ -199,6 +214,17 @@ class EmojiMemoryGame: ObservableObject {
             do {
                 let num_themes = String(emoji_themes.count)
                 try num_themes.write(to: fileURL_num_themes, atomically: false, encoding: .utf8)
+            }
+            catch { print("writing to file failed") }
+            
+            //Save max color id
+            let file_max_color_id = "max_color_id"
+            let fileURL_max_color_id = dir.appendingPathComponent(file_max_color_id)
+            
+            //writing
+            do {
+                let max_color_id_loc = String(get_max_color_id())
+                try max_color_id_loc.write(to: fileURL_max_color_id, atomically: false, encoding: .utf8)
             }
             catch { print("writing to file failed") }
             
@@ -380,9 +406,23 @@ class EmojiMemoryGame: ObservableObject {
     
     func add_new_theme() {
         let num_themes = emoji_themes.count
-        let new_theme = Theme(emojis_str: "", theme_color: Color.cyan, theme_name: "", id: num_themes, theme_color_id: num_themes)
+        let max_color_id = get_max_color_id()
+        let theme_color_loc = get_color(theme_id: max_color_id + 1)
+        let new_theme = Theme(emojis_str: "", theme_color: theme_color_loc, theme_name: "", id: num_themes, theme_color_id: max_color_id + 1)
         emoji_themes.append(new_theme)
-        theme_colors.append(Color.cyan)
+        theme_colors.append(theme_color_loc)
+    }
+    
+    func get_max_color_id() -> Int {
+        let num_themes = emoji_themes.count
+        var max_color_id: Int = -10
+        for theme_index in 0..<num_themes {
+            if emoji_themes[theme_index].theme_color_id > max_color_id {
+                max_color_id = emoji_themes[theme_index].theme_color_id
+            }
+        }
+        
+        return max_color_id
     }
     
     func new_game_with_id(id: Int) {
