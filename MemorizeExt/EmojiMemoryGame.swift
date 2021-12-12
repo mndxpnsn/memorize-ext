@@ -13,6 +13,7 @@ struct Theme: Identifiable, Equatable {
     var theme_color: Color
     var theme_name: String
     var id: Int
+    var theme_color_id: Int
 }
 
 var init_set = false
@@ -48,7 +49,7 @@ func create_card_content (index: Int) -> String {
 
 func createMemoryGame() -> MemoryGame {
     if state_read == false {
-        read_state()
+//        read_state()
         state_read = true
     }
     if emoji_themes_glb.isEmpty {
@@ -63,12 +64,14 @@ func createMemoryGame() -> MemoryGame {
 
 func add_theme(emojis: Array<String>, num_pairs: Int, theme_name: String) {
 
-    var emojis_loc = Theme(emojis_str: "", theme_color: Color.cyan, theme_name: theme_name, id: theme_counter)
+    var emojis_loc = Theme(emojis_str: "", theme_color: Color.cyan, theme_name: theme_name, id: theme_counter, theme_color_id: theme_counter)
     let num_pairs = emojis.count
     
     emojis_loc.id = theme_counter
     emojis_loc.theme_name = theme_name
     emojis_loc.theme_color = get_color(theme_id: theme_counter)
+    emojis_loc.theme_color_id = theme_counter
+    
     for index in 0..<num_pairs {
         emojis_loc.emojis_str = emojis_loc.emojis_str + emojis[index]
     }
@@ -133,8 +136,21 @@ func read_state() {
                 id_theme = Int(theme_id) ?? 0
             }
             catch { print("could not read theme name") }
-            let color_theme = get_color(theme_id: theme_index)
-            theme_elem = Theme(emojis_str: emojis_theme, theme_color: color_theme, theme_name: name_theme, id: id_theme)
+            
+            //Read theme color id
+            let file_name_color_id = "theme_color_id" + String(theme_index)
+            let fileURL_color_id = dir.appendingPathComponent(file_name_color_id)
+            var color_id_theme = 0
+            
+            //reading
+            do {
+                let color_id = try String(contentsOf: fileURL_color_id, encoding: .utf8)
+                color_id_theme = Int(color_id) ?? 0
+            }
+            catch { print("could not read theme name") }
+            
+            let color_theme = get_color(theme_id: color_id_theme)
+            theme_elem = Theme(emojis_str: emojis_theme, theme_color: color_theme, theme_name: name_theme, id: id_theme, theme_color_id: color_id_theme)
             theme_colors.append(color_theme)
             emoji_themes_glb.append(theme_elem)
         }
@@ -220,6 +236,18 @@ class EmojiMemoryGame: ObservableObject {
                     try id.write(to: fileURL_id, atomically: false, encoding: .utf8)
                 }
                 catch { print("writing to file failed") }
+                
+                
+                //Save theme color id
+                let file_name_color_id = "theme_color_id" + String(theme_index)
+                let fileURL_color_id = dir.appendingPathComponent(file_name_color_id)
+                
+                //writing
+                do {
+                    let color_id = String(emoji_themes[theme_index].theme_color_id)
+                    try color_id.write(to: fileURL_color_id, atomically: false, encoding: .utf8)
+                }
+                catch { print("writing to file failed") }
             }
         }
     }
@@ -237,7 +265,14 @@ class EmojiMemoryGame: ObservableObject {
     }
     
     func remove_theme_with(theme_offset: IndexSet) {
-        emoji_themes.remove(atOffsets: theme_offset)
+        withAnimation {
+            emoji_themes.remove(atOffsets: theme_offset)
+        }
+        let num_themes_loc = emoji_themes.count
+        for theme_index in 0..<num_themes_loc {
+            emoji_themes[theme_index].id = theme_index
+            emoji_themes[theme_index].theme_color = get_color(theme_id: emoji_themes[theme_index].theme_color_id)
+        }
     }
     
     func move_theme_to(fromOffsets: IndexSet, toOffset: Int) {
@@ -309,7 +344,7 @@ class EmojiMemoryGame: ObservableObject {
     
     init() {
         if state_read == false {
-            read_state()
+//            read_state()
             state_read = true
         }
         if emoji_themes_glb.isEmpty {
@@ -345,7 +380,7 @@ class EmojiMemoryGame: ObservableObject {
     
     func add_new_theme() {
         let num_themes = emoji_themes.count
-        let new_theme = Theme(emojis_str: "", theme_color: Color.cyan, theme_name: "", id: num_themes)
+        let new_theme = Theme(emojis_str: "", theme_color: Color.cyan, theme_name: "", id: num_themes, theme_color_id: num_themes)
         emoji_themes.append(new_theme)
         theme_colors.append(Color.cyan)
     }
@@ -365,11 +400,11 @@ class EmojiMemoryGame: ObservableObject {
     }
     
     func get_theme_color() -> Color {
-        return theme_colors[theme]
+        return get_color(theme_id: emoji_themes[theme].theme_color_id)
     }
     
     func get_color_of_theme_with(id: Int) -> Color {
-        return theme_colors[id]
+        return get_color(theme_id: emoji_themes[id].theme_color_id)
     }
     
     func get_score() -> Int {
