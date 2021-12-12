@@ -59,6 +59,7 @@ func createMemoryGame() -> MemoryGame {
             set_emoji_themes()
             init_set = true
         }
+        
     }
 
     return MemoryGame(numberOfPairsOfCards: emoji_themes_glb[theme].emojis_str.count, createCardContent: create_card_content)
@@ -394,6 +395,8 @@ class EmojiMemoryGame: ObservableObject {
         }
         
         emoji_themes = emoji_themes_glb
+        
+        save_state()
     }
     
     @Published private(set) var model: MemoryGame = createMemoryGame()
