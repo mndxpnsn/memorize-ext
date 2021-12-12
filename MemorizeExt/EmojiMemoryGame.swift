@@ -299,10 +299,13 @@ class EmojiMemoryGame: ObservableObject {
             emoji_themes[theme_index].id = theme_index
             emoji_themes[theme_index].theme_color = get_color(theme_id: emoji_themes[theme_index].theme_color_id)
         }
+        
+        save_state()
     }
     
     func move_theme_to(fromOffsets: IndexSet, toOffset: Int) {
         emoji_themes.move(fromOffsets: fromOffsets, toOffset: toOffset)
+        save_state()
     }
     
     func get_unique_random_array(size: Int, diff: Int) -> Array<Int> {
@@ -321,10 +324,14 @@ class EmojiMemoryGame: ObservableObject {
         }
         let num_emoji = emoji_themes[theme].emojis_str.count
         remove_repeating_emoji(num_emoji: num_emoji)
+        
+        save_state()
     }
     
     func change_to_name(theme: Int, text: String) {
         emoji_themes[theme].theme_name = text
+        
+        save_state()
     }
     
     func remove_emoji(emoji: Character) {
@@ -343,6 +350,8 @@ class EmojiMemoryGame: ObservableObject {
         }
         
         emoji_themes[theme].emojis_str = emojis_loc
+        
+        save_state()
     }
     
     func remove_repeating_emoji(num_emoji: Int) {
@@ -411,6 +420,8 @@ class EmojiMemoryGame: ObservableObject {
         let new_theme = Theme(emojis_str: "", theme_color: theme_color_loc, theme_name: "", id: num_themes, theme_color_id: max_color_id + 1)
         emoji_themes.append(new_theme)
         theme_colors.append(theme_color_loc)
+        
+        save_state()
     }
     
     func get_max_color_id() -> Int {
