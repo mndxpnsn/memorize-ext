@@ -16,7 +16,7 @@ struct Theme: Identifiable, Equatable {
 }
 
 var init_set = false
-
+var state_read = false
 let emojis_theme1 = ["🚂", "🚀", "🚁", "🚜", "🚗", "🚄", "🛵", "🚅"]
 let emojis_theme2 = ["🚗", "🚄", "🛵", "🚅", "🚂", "🚀", "🚁", "🚜"]
 let emojis_theme3 = ["🏎", "🚍", "🗿", "🕍", "🚗", "🚄", "🛵", "🚅"]
@@ -47,8 +47,11 @@ func create_card_content (index: Int) -> String {
 }
 
 func createMemoryGame() -> MemoryGame {
-    if emoji_themes_glb.isEmpty {
+    if state_read == false {
         read_state()
+        state_read = true
+    }
+    if emoji_themes_glb.isEmpty {
         if init_set == false {
             set_emoji_themes()
             init_set = true
@@ -168,8 +171,6 @@ class EmojiMemoryGame: ObservableObject {
     }
     
     func save_state() {
-        emoji_themes_glb = emoji_themes
-        
         let num_themes = emoji_themes.count
         
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
@@ -299,8 +300,11 @@ class EmojiMemoryGame: ObservableObject {
     }
     
     init() {
-        if emoji_themes.isEmpty {
+        if state_read == false {
             read_state()
+            state_read = true
+        }
+        if emoji_themes_glb.isEmpty {
             if init_set == false {
                 set_emoji_themes()
                 init_set = true
