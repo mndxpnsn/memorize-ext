@@ -8,18 +8,11 @@
 //import Foundation
 import SwiftUI
 
-struct Theme: Identifiable, Equatable, Hashable {
+struct Theme: Identifiable, Equatable {
     var emojis_str: String
     var theme_color: Color
     var theme_name: String
     var id: Int
-    
-//    fileprivate init(emojis: [String], emojis_str: String, theme_color: Color, id: Int) {
-//        self.emojis = emojis
-//        self.emojis_str = emojis_str
-//        self.theme_color = theme_color
-//        self.id = id
-//    }
 }
 
 var init_set = false
@@ -53,13 +46,16 @@ func create_card_content (index: Int) -> String {
     return String(emoji_themes_glb[theme].emojis_str[index_str..<index_str_upb])
 }
 
-func createMemoryGame() -> MemoryGame<String> {
-    if init_set == false {
-        set_emoji_themes()
-        init_set = true
+func createMemoryGame() -> MemoryGame {
+    if emoji_themes_glb.isEmpty {
+        read_state()
+        if init_set == false {
+            set_emoji_themes()
+            init_set = true
+        }
     }
 
-    return MemoryGame<String>(numberOfPairsOfCards: emoji_themes_glb[theme].emojis_str.count, createCardContent: create_card_content)
+    return MemoryGame(numberOfPairsOfCards: emoji_themes_glb[theme].emojis_str.count, createCardContent: create_card_content)
 }
 
 func add_theme(emojis: Array<String>, num_pairs: Int, theme_name: String, color: Color) {
@@ -81,12 +77,150 @@ func add_theme(emojis: Array<String>, num_pairs: Int, theme_name: String, color:
     
 }
 
+func read_state() {
+    if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+
+        let file_name_num_themes = "num_themes"
+        let fileURL_num_themes = dir.appendingPathComponent(file_name_num_themes)
+        var num_themes = 0
+        
+        //reading
+        do {
+            let num = try String(contentsOf: fileURL_num_themes, encoding: .utf8)
+            num_themes = Int(num) ?? 0
+        }
+        catch { print("num themes not read") }
+        
+        for theme_index in 0..<num_themes {
+            
+            var theme_elem: Theme
+            
+            //Read emojis
+            let file_name_emojis = "emojis" + String(theme_index)
+            let fileURL_emojis = dir.appendingPathComponent(file_name_emojis)
+            var emojis_theme = ""
+            
+            //reading
+            do {
+                let emojis = try String(contentsOf: fileURL_emojis, encoding: .utf8)
+                emojis_theme = emojis
+            }
+            catch { print("could not read emojis") }
+            
+            //Read theme name
+            let file_name_theme_name = "theme_name" + String(theme_index)
+            let fileURL_theme_name = dir.appendingPathComponent(file_name_theme_name)
+            var name_theme = ""
+            
+            //reading
+            do {
+                let theme_name = try String(contentsOf: fileURL_theme_name, encoding: .utf8)
+                name_theme = theme_name
+            }
+            catch { print("could not read theme name") }
+            
+            //Read theme id
+            let file_name_id = "theme_id" + String(theme_index)
+            let fileURL_id = dir.appendingPathComponent(file_name_id)
+            var id_theme = 0
+            
+            //reading
+            do {
+                let theme_id = try String(contentsOf: fileURL_id, encoding: .utf8)
+                id_theme = Int(theme_id) ?? 0
+            }
+            catch { print("could not read theme name") }
+            let color_theme = get_color(theme_id: theme_index)
+            theme_elem = Theme(emojis_str: emojis_theme, theme_color: color_theme, theme_name: name_theme, id: id_theme)
+            theme_colors.append(color_theme)
+            emoji_themes_glb.append(theme_elem)
+        }
+    }
+}
+
+func get_color(theme_id: Int) -> Color {
+    let color = theme_id
+    switch color {
+    case 0: return Color.blue
+    case 1: return Color.red
+    case 2: return Color.green
+    case 3: return Color.yellow
+    case 4: return Color.orange
+    case 5: return Color.brown
+    default: return Color.cyan
+    }
+}
+
+struct file_struct {
+    var emojis: String
+    var theme_name: String
+    var id: Int
+}
+
+let color: Int = 0
+
 class EmojiMemoryGame: ObservableObject {
     
     @Published var emoji_themes: [Theme] = [Theme]()
     
     func get_emoji_themes() -> [Theme] {
         return emoji_themes
+    }
+    
+    func save_state() {
+        emoji_themes_glb = emoji_themes
+        
+        let num_themes = emoji_themes.count
+        
+        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+
+            //Save number of themes
+            let file_name_num_themes = "num_themes"
+            let fileURL_num_themes = dir.appendingPathComponent(file_name_num_themes)
+            
+            //writing
+            do {
+                let num_themes = String(emoji_themes.count)
+                try num_themes.write(to: fileURL_num_themes, atomically: false, encoding: .utf8)
+            }
+            catch { print("writing to file failed") }
+            
+            for theme_index in 0..<num_themes {
+                
+                //Save emojis
+                let file_name_emojis = "emojis" + String(theme_index)
+                let fileURL_emojis = dir.appendingPathComponent(file_name_emojis)
+                
+                //writing
+                do {
+                    let emojis_str = emoji_themes[theme_index].emojis_str
+                    try emojis_str.write(to: fileURL_emojis, atomically: false, encoding: .utf8)
+                }
+                catch { print("writing to file failed") }
+                
+                //Save theme name
+                let file_name_theme_name = "theme_name" + String(theme_index)
+                let fileURL_theme_name = dir.appendingPathComponent(file_name_theme_name)
+                
+                //writing
+                do {
+                    let theme_name = emoji_themes[theme_index].theme_name
+                    try theme_name.write(to: fileURL_theme_name, atomically: false, encoding: .utf8)
+                }
+                catch { print("writing to file failed") }
+                
+                //Save theme id
+                let file_name_id = "theme_id" + String(theme_index)
+                let fileURL_id = dir.appendingPathComponent(file_name_id)
+                
+                //writing
+                do {
+                    let id = String(emoji_themes[theme_index].id)
+                    try id.write(to: fileURL_id, atomically: false, encoding: .utf8)
+                }
+                catch { print("writing to file failed") }
+            }
+        }
     }
     
     func set_theme(id: Int) {
@@ -165,22 +299,25 @@ class EmojiMemoryGame: ObservableObject {
     }
     
     init() {
-        if init_set == false {
-            set_emoji_themes()
-            init_set = true
+        if emoji_themes.isEmpty {
+            read_state()
+            if init_set == false {
+                set_emoji_themes()
+                init_set = true
+            }
         }
         
         emoji_themes = emoji_themes_glb
     }
     
-    @Published private(set) var model: MemoryGame<String> = createMemoryGame()
+    @Published private(set) var model: MemoryGame = createMemoryGame()
 
-    var cards: Array<MemoryGame<String>.Card> {
+    var cards: Array<MemoryGame.Card> {
         return model.cards
     }
     
     // MARK: - Intent(s)
-    func choose(_ card: MemoryGame<String>.Card) {
+    func choose(_ card: MemoryGame.Card) {
         model.choose(card)
     }
     
