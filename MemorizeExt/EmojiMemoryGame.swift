@@ -30,12 +30,12 @@ var theme: Int = 0
 var theme_counter: Int = 0
 
 func set_emoji_themes() {
-    add_theme(emojis: emojis_theme1, num_pairs: numberOfPairsOfCardsGlb, theme_name: "Theme 1", color: Color.red)
-    add_theme(emojis: emojis_theme2, num_pairs: numberOfPairsOfCardsGlb, theme_name: "Theme 2", color: Color.blue)
-    add_theme(emojis: emojis_theme3, num_pairs: numberOfPairsOfCardsGlb, theme_name: "Theme 3", color: Color.green)
-    add_theme(emojis: emojis_theme4, num_pairs: numberOfPairsOfCardsGlb, theme_name: "Theme 4", color: Color.orange)
-    add_theme(emojis: emojis_theme5, num_pairs: numberOfPairsOfCardsGlb, theme_name: "Theme 5", color: Color.yellow)
-    add_theme(emojis: emojis_theme6, num_pairs: numberOfPairsOfCardsGlb - 1, theme_name: "Theme 6", color: Color.brown)
+    add_theme(emojis: emojis_theme1, num_pairs: numberOfPairsOfCardsGlb, theme_name: "Theme 1")
+    add_theme(emojis: emojis_theme2, num_pairs: numberOfPairsOfCardsGlb, theme_name: "Theme 2")
+    add_theme(emojis: emojis_theme3, num_pairs: numberOfPairsOfCardsGlb, theme_name: "Theme 3")
+    add_theme(emojis: emojis_theme4, num_pairs: numberOfPairsOfCardsGlb, theme_name: "Theme 4")
+    add_theme(emojis: emojis_theme5, num_pairs: numberOfPairsOfCardsGlb, theme_name: "Theme 5")
+    add_theme(emojis: emojis_theme6, num_pairs: numberOfPairsOfCardsGlb - 1, theme_name: "Theme 6")
 }
 
 var emoji_themes_glb: [Theme] = [Theme]()
@@ -61,20 +61,20 @@ func createMemoryGame() -> MemoryGame {
     return MemoryGame(numberOfPairsOfCards: emoji_themes_glb[theme].emojis_str.count, createCardContent: create_card_content)
 }
 
-func add_theme(emojis: Array<String>, num_pairs: Int, theme_name: String, color: Color) {
+func add_theme(emojis: Array<String>, num_pairs: Int, theme_name: String) {
 
-    var emojis_loc = Theme(emojis_str: "", theme_color: color, theme_name: theme_name, id: theme_counter)
+    var emojis_loc = Theme(emojis_str: "", theme_color: Color.cyan, theme_name: theme_name, id: theme_counter)
     let num_pairs = emojis.count
     
     emojis_loc.id = theme_counter
     emojis_loc.theme_name = theme_name
-    
+    emojis_loc.theme_color = get_color(theme_id: theme_counter)
     for index in 0..<num_pairs {
         emojis_loc.emojis_str = emojis_loc.emojis_str + emojis[index]
     }
     
     emoji_themes_glb.append(emojis_loc)
-    theme_colors.append(color)
+    theme_colors.append(emojis_loc.theme_color)
     
     theme_counter = theme_counter + 1
     
@@ -233,7 +233,7 @@ class EmojiMemoryGame: ObservableObject {
     }
     
     func get_emojis_of_theme(theme_id: Int) -> String {
-        return String(emoji_themes[theme_id].emojis_str)
+        return String(emoji_themes[theme].emojis_str)
     }
     
     func get_unique_random_array(size: Int, diff: Int) -> Array<Int> {
