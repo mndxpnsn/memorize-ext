@@ -334,6 +334,10 @@ class EmojiMemoryGame: ObservableObject {
         save_state()
     }
     
+    func get_theme_name_with(id: Int) -> String {
+        return emoji_themes[id].theme_name
+    }
+    
     func remove_emoji(emoji: Character) {
         var emojis_loc = ""
         let num_emoji = emoji_themes[theme].emojis_str.count

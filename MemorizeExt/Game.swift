@@ -14,7 +14,7 @@ struct Game: View {
     var body: some View {
         let color = get_color_of_theme_with(id: theme_id)
         VStack {
-            theme_title_with(id: theme_id)
+            get_theme_name_with(id: theme_id)
             ScrollView {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 75))]) {
                     ForEach(viewModel.cards, content: { card in
@@ -48,6 +48,10 @@ struct Game: View {
     
     func set_theme(id: Int) -> Void {
         viewModel.set_theme(id: id)
+    }
+    
+    func get_theme_name_with(id: Int) -> Text {
+        return Text(viewModel.get_theme_name_with(id: id))
     }
     
     func theme_title_with(id: Int) -> Text {
