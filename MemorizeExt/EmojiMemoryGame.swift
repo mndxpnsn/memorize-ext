@@ -49,7 +49,7 @@ func create_card_content (index: Int) -> String {
 
 func createMemoryGame() -> MemoryGame {
     if state_read == false {
-//        read_state()
+        read_state()
         state_read = true
     }
     if emoji_themes_glb.isEmpty {
@@ -344,7 +344,7 @@ class EmojiMemoryGame: ObservableObject {
     
     init() {
         if state_read == false {
-//            read_state()
+            read_state()
             state_read = true
         }
         if emoji_themes_glb.isEmpty {
