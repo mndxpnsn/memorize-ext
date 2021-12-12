@@ -236,6 +236,10 @@ class EmojiMemoryGame: ObservableObject {
         return String(emoji_themes[theme].emojis_str)
     }
     
+    func remove_theme_with(theme_offset: IndexSet) {
+        emoji_themes.remove(atOffsets: theme_offset)
+    }
+    
     func get_unique_random_array(size: Int, diff: Int) -> Array<Int> {
         var set = Set<Int>()
         while set.count < size - diff {
