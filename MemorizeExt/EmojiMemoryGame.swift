@@ -187,6 +187,17 @@ func get_color(theme_id: Int) -> Color {
     case 8: return Color.indigo
     case 9: return Color.pink
     case 10: return Color.orange
+    case 11: return Color.blue
+    case 12: return Color.red
+    case 13: return Color.green
+    case 14: return Color.yellow
+    case 15: return Color.orange
+    case 16: return Color.brown
+    case 17: return Color.gray
+    case 18: return Color.mint
+    case 19: return Color.indigo
+    case 20: return Color.pink
+    case 21: return Color.orange
     default: return Color.cyan
     }
 }
