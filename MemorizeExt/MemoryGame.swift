@@ -94,10 +94,14 @@ func add_theme(emojis: Array<String>, num_pairs: Int, theme_name: String) {
     
     for index in 0..<num_pairs {
         emojis_loc.emojis_str = emojis_loc.emojis_str + emojis[index]
+    }
+    
+    for index in 0..<(num_pairs * 2) {
         let card_content_loc = convert_emojis_str_to_cards(emojis: emojis_loc.emojis_str)
-        let card_loc = Card(isFaceUp: false, isMatched: false, isSeen: false, content: card_content_loc[index], id: index)
+        let card_loc = Card(isFaceUp: false, isMatched: false, isSeen: false, content: card_content_loc[index/2], id: index)
         card_array.append(card_loc)
     }
+    
     emojis_loc.theme_cards = card_array
     max_theme_color_id = theme_counter
 
@@ -352,10 +356,10 @@ struct MemoryGame {
         let card_str_array = convert_emojis_str_to_cards(emojis: emojis_loc)
         var card_array_loc = [Card]()
         
-        let size_arr = card_str_array.count
+        let size_arr = card_str_array.count * 2
         
         for card_index in 0..<size_arr {
-            let card_loc = Card(isFaceUp: false, isMatched: false, isSeen: false, content: card_str_array[card_index], id: card_index)
+            let card_loc = Card(isFaceUp: false, isMatched: false, isSeen: false, content: card_str_array[card_index/2], id: card_index)
             card_array_loc.append(card_loc)
         }
         

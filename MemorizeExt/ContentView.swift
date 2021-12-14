@@ -30,6 +30,7 @@ struct ContentView: View {
                                 }
                             }
                         }
+                        .padding()
                     }
                     .onDelete { indexSet in
                         remove_theme_with(theme_id: indexSet)
@@ -80,6 +81,7 @@ struct ContentView: View {
                                 Text("")
                             }
                         }
+                        .padding()
                         .onTapGesture {
                             managing = true
                             set_theme(id: emoji_theme.id)
