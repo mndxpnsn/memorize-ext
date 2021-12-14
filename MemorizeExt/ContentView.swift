@@ -15,16 +15,11 @@ struct ContentView: View {
     @State private var managing = false
     
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(viewModel.get_emoji_themes()) { emoji_theme in
-                    ZStack { // This is the Z-stack hack
-                        Button(action: {
-                            let theme_local = get_actual_theme()
-                            if theme_local.theme_name != emoji_theme.theme_name {
-//                                set_new_game(theme: emoji_theme.id)
-                            }
-                        })  {
+        if editMode == .inactive {
+            NavigationView {
+                List {
+                    ForEach(viewModel.get_emoji_themes()) { emoji_theme in
+                        NavigationLink(destination: Game(viewModel: viewModel, theme_id: emoji_theme.id)) {
                             VStack {
                                 Text(emoji_theme.theme_name)
                                 Text(String(emoji_theme.emojis_str))
@@ -34,50 +29,96 @@ struct ContentView: View {
                                     Text("")
                                 }
                             }
-                            .onTapGesture {
-                                if editMode == .active {
-                                    set_theme(id: emoji_theme.id)
-                                    managing = true
-                                }
+                        }
+                    }
+                    .onDelete { indexSet in
+                        remove_theme_with(theme_id: indexSet)
+                    }
+                    .onMove { indexSet, newOffset in
+                        move_theme_to(fromOffsets: indexSet, toOffset: newOffset)
+                    }
+                    
+                    Button(action: {
+                        add_new_theme()
+                        print("added new theme")
+                    })  {
+                        Text("Add new theme")
+                    }
+                    .padding()
+                }
+                .sheet(isPresented: $managing) {
+                    if editMode == .active {
+                        ThemeEditor(viewModel: viewModel)
+                    }
+                }
+                .navigationTitle("Choose Theme")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem { EditButton() }
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        if presentationMode.wrappedValue.isPresented, UIDevice.current.userInterfaceIdiom != .pad {
+                            Button("Close") {
+                                presentationMode.wrappedValue.dismiss()
                             }
                         }
-                        .padding()
-                        NavigationLink(destination: Game(viewModel: viewModel, theme_id: emoji_theme.id)) {}
                     }
                 }
-                .onDelete { indexSet in
-                    remove_theme_with(theme_id: indexSet)
-                }
-                .onMove { indexSet, newOffset in
-                    move_theme_to(fromOffsets: indexSet, toOffset: newOffset)
-                }
-                
-                Button(action: {
-                    add_new_theme()
-                    print("added new theme")
-                })  {
-                    Text("Add new theme")
-                }
-                .padding()
+                .environment(\.editMode, $editMode)
             }
-            .sheet(isPresented: $managing) {
-                if editMode == .active {
-                    ThemeEditor(viewModel: viewModel)
+        }
+        
+        if editMode == .active {
+            NavigationView {
+                List {
+                    ForEach(viewModel.get_emoji_themes()) { emoji_theme in
+                        VStack {
+                            Text(emoji_theme.theme_name)
+                            Text(String(emoji_theme.emojis_str))
+                            ZStack {
+                                emoji_theme.theme_color
+                                    .frame(width: 40)
+                                Text("")
+                            }
+                        }
+                        .onTapGesture {
+                            managing = true
+                            set_theme(id: emoji_theme.id)
+                        }
+                    }
+                    .onDelete { indexSet in
+                        remove_theme_with(theme_id: indexSet)
+                    }
+                    .onMove { indexSet, newOffset in
+                        move_theme_to(fromOffsets: indexSet, toOffset: newOffset)
+                    }
+                    
+                    Button(action: {
+                        add_new_theme()
+                        print("added new theme")
+                    })  {
+                        Text("Add new theme")
+                    }
+                    .padding()
                 }
-            }
-            .navigationTitle("Choose Theme")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem { EditButton() }
-                ToolbarItem(placement: .navigationBarLeading) {
-                    if presentationMode.wrappedValue.isPresented, UIDevice.current.userInterfaceIdiom != .pad {
-                        Button("Close") {
-                            presentationMode.wrappedValue.dismiss()
+                .sheet(isPresented: $managing) {
+                    if editMode == .active {
+                        ThemeEditor(viewModel: viewModel)
+                    }
+                }
+                .navigationTitle("Choose Theme")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem { EditButton() }
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        if presentationMode.wrappedValue.isPresented, UIDevice.current.userInterfaceIdiom != .pad {
+                            Button("Close") {
+                                presentationMode.wrappedValue.dismiss()
+                            }
                         }
                     }
                 }
+                .environment(\.editMode, $editMode)
             }
-            .environment(\.editMode, $editMode)
         }
     }
     
