@@ -379,20 +379,8 @@ struct MemoryGame {
     }
     
     mutating func move_theme_to(fromOffsets: IndexSet, toOffset: Int) {
-        
-        let num_themes_loc = emoji_themes.count
-        print("emoji theme names before move")
-        for theme_index in 0..<num_themes_loc {
-            print(emoji_themes[theme_index].theme_name)
-        }
-        
-        emoji_themes.move(fromOffsets: fromOffsets, toOffset: toOffset)
-        
-        print("emoji theme names after move")
-        for theme_index in 0..<num_themes_loc {
-            print(emoji_themes[theme_index].theme_name)
-        }
-        
+
+        emoji_themes.move(fromOffsets: fromOffsets, toOffset: toOffset)        
         save_state()
     }
     
