@@ -10,18 +10,20 @@ import SwiftUI
 struct Game: View {
     @ObservedObject var viewModel: EmojiMemoryGame
     @State var theme_id: Int
+    @State var theme_name: String
     
     var body: some View {
-        let color = get_color_of_theme_with(id: theme_id)
+        let color = get_color_of_theme_with_name(theme_name: theme_name)
         VStack {
-            get_theme_name_with(id: theme_id)
+            let theme_name = viewModel.get_theme_name_with(theme_name: theme_name)
+            Text(theme_name)
             ScrollView {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 75))]) {
-                    ForEach(viewModel.cards, content: { card in
+                    ForEach(viewModel.get_cards_with_name(theme_name: theme_name), content: { card in
                         CardView(card: card)
                             .aspectRatio(2/3, contentMode: .fit)
                             .onTapGesture {
-                                viewModel.choose(card)
+                                viewModel.choose(theme_name: theme_name, card)
                             }
                     })
                 }
@@ -50,8 +52,8 @@ struct Game: View {
         viewModel.set_theme(id: id)
     }
     
-    func get_theme_name_with(id: Int) -> Text {
-        return Text(viewModel.get_theme_name_with(id: id))
+    func get_theme_name_with(theme_name: String) -> Text {
+        return Text(viewModel.get_theme_name_with(theme_name: theme_name))
     }
     
     func theme_title_with(id: Int) -> Text {
@@ -74,6 +76,10 @@ struct Game: View {
 
     func get_color_of_theme_with(id: Int) -> Color {
         return viewModel.get_color_of_theme_with(id: id)
+    }
+    
+    func get_color_of_theme_with_name(theme_name: String) -> Color {
+        return viewModel.get_color_of_theme_with_name(theme_name: theme_name)
     }
     
     func myAction () -> Void {
