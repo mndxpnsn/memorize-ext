@@ -66,7 +66,7 @@ func create_card_content2(theme_id: Int, index: Int) -> String {
 
 func createMemoryGame() -> MemoryGame {
     if state_read == false {
-//        read_state()
+        read_state()
         state_read = true
     }
     if emoji_themes_glb.isEmpty {
@@ -110,6 +110,16 @@ func add_theme(emojis: Array<String>, num_pairs: Int, theme_name: String) {
     
     theme_counter = theme_counter + 1
     
+}
+
+func get_unique_random_array(size: Int) -> Array<Int> {
+    var set = Set<Int>()
+    while set.count < size {
+        set.insert(Int.random(in: 0..<size))
+    }
+    let randArray = Array(set)
+    
+    return randArray
 }
 
 func read_state() {
@@ -195,9 +205,11 @@ func read_state() {
             emoji_array = convert_emojis_str_to_cards(emojis: emojis_theme)
             var card_array = [Card]()
             
-            let num_cards_in_arr = emoji_array.count
-            for card_elem in 0..<num_cards_in_arr {
-                let elem_loc = Card(isFaceUp: false, isMatched: false, isSeen: false, content: emoji_array[card_elem], id: card_elem)
+            let num_cards_in_arr = emoji_array.count * 2
+            let randArray = get_unique_random_array(size: num_cards_in_arr)
+            for index in 0..<num_cards_in_arr {
+                let index_loc = randArray[index]
+                let elem_loc = Card(isFaceUp: false, isMatched: false, isSeen: false, content: emoji_array[index_loc/2], id: index)
                 card_array.append(elem_loc)
             }
             
@@ -264,7 +276,82 @@ struct MemoryGame {
         return emoji_themes
     }
     
-    func save_state() {}
+    func save_state() {
+        let num_themes = emoji_themes.count
+        
+        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+
+            //Save number of themes
+            let file_name_num_themes = "num_themes"
+            let fileURL_num_themes = dir.appendingPathComponent(file_name_num_themes)
+            
+            //writing
+            do {
+                let num_themes = String(emoji_themes.count)
+                try num_themes.write(to: fileURL_num_themes, atomically: false, encoding: .utf8)
+            }
+            catch { print("writing to file failed") }
+            
+            //Save max color id
+            let file_max_color_id = "max_color_id"
+            let fileURL_max_color_id = dir.appendingPathComponent(file_max_color_id)
+            
+            //writing
+            do {
+                let max_color_id_loc = String(get_max_color_id())
+                try max_color_id_loc.write(to: fileURL_max_color_id, atomically: false, encoding: .utf8)
+            }
+            catch { print("writing to file failed") }
+            
+            for theme_index in 0..<num_themes {
+                
+                //Save emojis
+                let file_name_emojis = "emojis" + String(theme_index)
+                let fileURL_emojis = dir.appendingPathComponent(file_name_emojis)
+                
+                //writing
+                do {
+                    let emojis_str = emoji_themes[theme_index].emojis_str
+                    try emojis_str.write(to: fileURL_emojis, atomically: false, encoding: .utf8)
+                }
+                catch { print("writing to file failed") }
+                
+                //Save theme name
+                let file_name_theme_name = "theme_name" + String(theme_index)
+                let fileURL_theme_name = dir.appendingPathComponent(file_name_theme_name)
+                
+                //writing
+                do {
+                    let theme_name = emoji_themes[theme_index].theme_name
+                    try theme_name.write(to: fileURL_theme_name, atomically: false, encoding: .utf8)
+                }
+                catch { print("writing to file failed") }
+                
+                //Save theme id
+                let file_name_id = "theme_id" + String(theme_index)
+                let fileURL_id = dir.appendingPathComponent(file_name_id)
+                
+                //writing
+                do {
+                    let id = String(emoji_themes[theme_index].id)
+                    try id.write(to: fileURL_id, atomically: false, encoding: .utf8)
+                }
+                catch { print("writing to file failed") }
+                
+                
+                //Save theme color id
+                let file_name_color_id = "theme_color_id" + String(theme_index)
+                let fileURL_color_id = dir.appendingPathComponent(file_name_color_id)
+                
+                //writing
+                do {
+                    let color_id = String(emoji_themes[theme_index].theme_color_id)
+                    try color_id.write(to: fileURL_color_id, atomically: false, encoding: .utf8)
+                }
+                catch { print("writing to file failed") }
+            }
+        }
+    }
     
     func set_theme(id: Int) {
         theme = id
@@ -442,7 +529,7 @@ struct MemoryGame {
         numberOfCards = 2 * numberOfPairsOfCards
         score = 0
 
-        let randArray = get_unique_random_array(size: numberOfCards)
+        let randArray = MemorizeExt.get_unique_random_array(size: numberOfCards)
         
         for index in 0..<numberOfCards {
             let index_loc = randArray[index]
@@ -452,7 +539,7 @@ struct MemoryGame {
         }
         
         if state_read == false {
-//            read_state()
+            read_state()
             state_read = true
         }
         if emoji_themes_glb.isEmpty {
@@ -465,16 +552,6 @@ struct MemoryGame {
         emoji_themes = emoji_themes_glb
         
         save_state()
-    }
-    
-    func get_unique_random_array(size: Int) -> Array<Int> {
-        var set = Set<Int>()
-        while set.count < size {
-            set.insert(Int.random(in: 0..<size))
-        }
-        let randArray = Array(set)
-        
-        return randArray
     }
     
     mutating func choose(theme_id: Int, _ card: Card) {
@@ -538,7 +615,7 @@ struct MemoryGame {
         cards = Array<Card>()
         numberOfCards = num_cards
         
-        let randArray = get_unique_random_array(size: num_cards)
+        let randArray = MemorizeExt.get_unique_random_array(size: num_cards)
         
         for index in 0..<num_cards {
             let index_loc = randArray[index]
@@ -552,7 +629,7 @@ struct MemoryGame {
         
         score = 0
         numberOfCards = emoji_themes[theme].emojis_str.count * 2
-        let randArray = get_unique_random_array(size: numberOfCards)
+        let randArray = MemorizeExt.get_unique_random_array(size: numberOfCards)
         for index in 0..<numberOfCards {
             let index_loc = randArray[index]
             emoji_themes[theme].theme_cards[index].isFaceUp = false
@@ -567,7 +644,7 @@ struct MemoryGame {
         theme = id
         score = 0
         numberOfCards = emoji_themes[id].emojis_str.count * 2
-        let randArray = get_unique_random_array(size: numberOfCards)
+        let randArray = MemorizeExt.get_unique_random_array(size: numberOfCards)
         for index in 0..<numberOfCards {
             let index_loc = randArray[index]
             emoji_themes[id].theme_cards[index].isFaceUp = false
