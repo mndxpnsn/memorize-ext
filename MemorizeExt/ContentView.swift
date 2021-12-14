@@ -17,12 +17,12 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             List {
-                ForEach(viewModel.emoji_themes) { emoji_theme in
+                ForEach(viewModel.get_emoji_themes()) { emoji_theme in
                     ZStack { // This is the Z-stack hack
                         Button(action: {
                             let theme_local = get_actual_theme()
                             if theme_local.theme_name != emoji_theme.theme_name {
-                                set_new_game(theme: emoji_theme.id)
+//                                set_new_game(theme: emoji_theme.id)
                             }
                         })  {
                             VStack {
@@ -54,6 +54,7 @@ struct ContentView: View {
                 
                 Button(action: {
                     add_new_theme()
+                    print("added new theme")
                 })  {
                     Text("Add new theme")
                 }
@@ -139,6 +140,7 @@ struct ContentView: View {
     
     func set_new_game(theme: Int) -> Void {
         viewModel.save_state()
+        viewModel.set_theme(id: theme)
         viewModel.new_game_with_id(id: theme)
     }
     
@@ -148,7 +150,7 @@ struct ContentView: View {
 }
 
 struct CardView: View {
-    let card: MemoryGame.Card
+    let card: Card
     
     var body: some View {
         

@@ -17,11 +17,11 @@ struct Game: View {
             get_theme_name_with(id: theme_id)
             ScrollView {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 75))]) {
-                    ForEach(viewModel.cards, content: { card in
+                    ForEach(viewModel.get_cards_of(theme_id: theme_id), content: { card in
                         CardView(card: card)
                             .aspectRatio(2/3, contentMode: .fit)
                             .onTapGesture {
-                                viewModel.choose(card)
+                                viewModel.choose(theme_id: theme_id, card)
                             }
                     })
                 }
