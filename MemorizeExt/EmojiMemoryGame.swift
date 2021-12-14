@@ -39,7 +39,7 @@ class EmojiMemoryGame: ObservableObject {
     }
     
     func add_emojis(theme: Int, emojis_str: String) {
-        model.add_emojis(theme: theme, emojis_str: emojis_str)
+        model.add_emojis(theme_id: theme, emojis_str: emojis_str)
     }
     
     func change_to_name(theme: Int, text: String) {

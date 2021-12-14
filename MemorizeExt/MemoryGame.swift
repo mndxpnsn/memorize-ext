@@ -302,12 +302,22 @@ struct MemoryGame {
         return randArray
     }
     
-    mutating func add_emojis(theme: Int, emojis_str: String) {
+    mutating func add_emojis(theme_id: Int, emojis_str: String) {
         withAnimation {
-            emoji_themes[theme].emojis_str = (emojis_str + emoji_themes[theme].emojis_str)
+            emoji_themes[theme_id].emojis_str = (emojis_str + emoji_themes[theme_id].emojis_str)
         }
-        let num_emoji = emoji_themes[theme].emojis_str.count
+        let num_emoji = emoji_themes[theme_id].emojis_str.count
         remove_repeating_emoji(num_emoji: num_emoji)
+        
+        let card_array_add = convert_emojis_str_to_cards(emojis: emojis_str)
+        let size_card_arr = card_array_add.count
+        
+        for card_index in 0..<size_card_arr {
+            let max_index_loc = emoji_themes[theme_id].theme_cards.count
+            var card_loc: Card = Card(isFaceUp: false, isMatched: false, isSeen: false, content: card_array_add[card_index], id: max_index_loc)
+            card_loc.content = card_array_add[card_index]
+            emoji_themes[theme_id].theme_cards.append(card_loc)
+        }
         
         save_state()
     }
@@ -338,6 +348,18 @@ struct MemoryGame {
         }
         
         emoji_themes[theme].emojis_str = emojis_loc
+        
+        let card_str_array = convert_emojis_str_to_cards(emojis: emojis_loc)
+        var card_array_loc = [Card]()
+        
+        let size_arr = card_str_array.count
+        
+        for card_index in 0..<size_arr {
+            let card_loc = Card(isFaceUp: false, isMatched: false, isSeen: false, content: card_str_array[card_index], id: card_index)
+            card_array_loc.append(card_loc)
+        }
+        
+        emoji_themes[theme].theme_cards = card_array_loc
         
         save_state()
     }
@@ -410,12 +432,7 @@ struct MemoryGame {
     func get_score_wrap() -> Int {
         return get_score()
     }
-    
-    
-    
-    
-    ///
-    
+
     init(numberOfPairsOfCards: Int, createCardContent: (Int) -> String) {
         cards = Array<Card>()
         numberOfCards = 2 * numberOfPairsOfCards
