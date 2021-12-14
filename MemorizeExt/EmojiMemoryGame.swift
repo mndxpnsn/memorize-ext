@@ -46,8 +46,12 @@ class EmojiMemoryGame: ObservableObject {
         model.change_to_name(theme: theme, text: text)
     }
     
-    func get_theme_name_with(id: Int) -> String {
-        return model.get_theme_name_with(id: id)
+    func get_theme_name_with(theme_name: String) -> String {
+        return model.get_theme_name_with(theme_name: theme_name)
+    }
+    
+    func get_color_of_theme_with_name(theme_name: String) -> Color {
+        return model.get_color_of_theme_with_name(theme_name: theme_name)
     }
     
     func remove_emoji(emoji: Character) {
@@ -76,12 +80,16 @@ class EmojiMemoryGame: ObservableObject {
     }
     
     // MARK: - Intent(s)
-    func choose(theme_id: Int, _ card: Card) {
-        model.choose(theme_id: theme_id, card)
+    func choose(theme_name: String, _ card: Card) {
+        model.choose(theme_name: theme_name, card)
     }
     
     func get_cards_of(theme_id: Int) -> [Card] {
         return model.get_cards_of(theme_id: theme_id)
+    }
+    
+    func get_cards_with_name(theme_name: String) -> [Card] {
+        return model.get_cards_with_name(theme_name: theme_name)
     }
     
     func new_game() {
@@ -98,6 +106,10 @@ class EmojiMemoryGame: ObservableObject {
     
     func new_game_with_id(id: Int) {
         model.new_game_with_id(id: id)
+    }
+    
+    func new_game_with_name(theme_name: String) {
+        model.new_game_with_name(theme_name: theme_name)
     }
     
     func get_theme() -> Int {

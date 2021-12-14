@@ -379,8 +379,33 @@ struct MemoryGame {
     }
     
     mutating func move_theme_to(fromOffsets: IndexSet, toOffset: Int) {
+        
+        let num_themes_loc = emoji_themes.count
+        print("emoji theme names before move")
+        for theme_index in 0..<num_themes_loc {
+            print(emoji_themes[theme_index].theme_name)
+        }
+        
         emoji_themes.move(fromOffsets: fromOffsets, toOffset: toOffset)
+        
+        print("emoji theme names after move")
+        for theme_index in 0..<num_themes_loc {
+            print(emoji_themes[theme_index].theme_name)
+        }
+        
         save_state()
+    }
+    
+    func get_cards_with_name(theme_name: String) -> [Card] {
+        let num_themes_loc = emoji_themes.count
+        var cards_of_theme = [Card]()
+        for theme_index_loc in 0..<num_themes_loc {
+            if theme_name == emoji_themes[theme_index_loc].theme_name {
+                cards_of_theme = emoji_themes[theme_index_loc].theme_cards
+            }
+        }
+        
+        return cards_of_theme
     }
     
     func get_unique_random_array(size: Int, diff: Int) -> Array<Int> {
@@ -419,8 +444,17 @@ struct MemoryGame {
         save_state()
     }
     
-    func get_theme_name_with(id: Int) -> String {
-        return emoji_themes[id].theme_name
+    func get_theme_name_with(theme_name: String) -> String {
+        
+        let num_themes_loc = emoji_themes.count
+        var res_str: String = ""
+        for theme_index_loc in 0..<num_themes_loc {
+            if emoji_themes[theme_index_loc].theme_name == theme_name {
+                res_str = theme_name
+            }
+        }
+        
+        return res_str
     }
     
     mutating func remove_emoji(emoji: Character) {
@@ -516,6 +550,18 @@ struct MemoryGame {
         return get_color(theme_id: emoji_themes[id].theme_color_id)
     }
     
+    func get_color_of_theme_with_name(theme_name: String) -> Color {
+        let num_themes_loc = emoji_themes.count
+        var color_result: Color = Color.cyan
+        for theme_index_loc in 0..<num_themes_loc {
+            if emoji_themes[theme_index_loc].theme_name == theme_name {
+                color_result = get_color(theme_id: emoji_themes[theme_index_loc].theme_color_id)
+            }
+        }
+        
+        return color_result
+    }
+    
     func get_cards_of(theme_id: Int) -> [Card] {
         return emoji_themes[theme_id].theme_cards
     }
@@ -554,47 +600,55 @@ struct MemoryGame {
         save_state()
     }
     
-    mutating func choose(theme_id: Int, _ card: Card) {
-        theme = theme_id
-        if let chosenIndex = index(theme_id: theme_id, of: card),
-           !emoji_themes[theme_id].theme_cards[chosenIndex].isFaceUp,
-            !emoji_themes[theme_id].theme_cards[chosenIndex].isMatched {
-            if let potentialMatchIndex = indexOfTheOneAndOnlyFaceUpCard {
-                if emoji_themes[theme_id].theme_cards[chosenIndex].content == emoji_themes[theme_id].theme_cards[potentialMatchIndex].content {
-                    emoji_themes[theme_id].theme_cards[chosenIndex].isMatched = true
-                    emoji_themes[theme_id].theme_cards[potentialMatchIndex].isMatched = true
-                    score = score + 2
-                }
-                else {
-                    if emoji_themes[theme_id].theme_cards[chosenIndex].isSeen {
-                        score = score - 1
-                    }
-                    if emoji_themes[theme_id].theme_cards[potentialMatchIndex].isSeen {
-                        score = score - 1
-                    }
-                    emoji_themes[theme_id].theme_cards[chosenIndex].isSeen = true
-                    emoji_themes[theme_id].theme_cards[potentialMatchIndex].isSeen = true
-                }
-                indexOfTheOneAndOnlyFaceUpCard = nil
-            }
-            else {
-                for index in 0..<emoji_themes[theme_id].theme_cards.count {
-                    emoji_themes[theme_id].theme_cards[index].isFaceUp = false
-                }
-                indexOfTheOneAndOnlyFaceUpCard = chosenIndex
-            }
-            emoji_themes[theme_id].theme_cards[chosenIndex].isFaceUp.toggle()
-        }
+    mutating func choose(theme_name: String, _ card: Card) {
         
-        //Check if game is finished
-        var game_is_finished = true
-        for index in 0..<emoji_themes[theme_id].theme_cards.count {
-            if emoji_themes[theme_id].theme_cards[index].isFaceUp == false {
-                game_is_finished = false
+        let num_themes_loc = emoji_themes.count
+        for theme_index_loc in 0..<num_themes_loc {
+            if emoji_themes[theme_index_loc].theme_name == theme_name {
+                let theme_id = theme_index_loc
+                
+                theme = theme_id
+                if let chosenIndex = index(theme_id: theme_id, of: card),
+                   !emoji_themes[theme_id].theme_cards[chosenIndex].isFaceUp,
+                    !emoji_themes[theme_id].theme_cards[chosenIndex].isMatched {
+                    if let potentialMatchIndex = indexOfTheOneAndOnlyFaceUpCard {
+                        if emoji_themes[theme_id].theme_cards[chosenIndex].content == emoji_themes[theme_id].theme_cards[potentialMatchIndex].content {
+                            emoji_themes[theme_id].theme_cards[chosenIndex].isMatched = true
+                            emoji_themes[theme_id].theme_cards[potentialMatchIndex].isMatched = true
+                            score = score + 2
+                        }
+                        else {
+                            if emoji_themes[theme_id].theme_cards[chosenIndex].isSeen {
+                                score = score - 1
+                            }
+                            if emoji_themes[theme_id].theme_cards[potentialMatchIndex].isSeen {
+                                score = score - 1
+                            }
+                            emoji_themes[theme_id].theme_cards[chosenIndex].isSeen = true
+                            emoji_themes[theme_id].theme_cards[potentialMatchIndex].isSeen = true
+                        }
+                        indexOfTheOneAndOnlyFaceUpCard = nil
+                    }
+                    else {
+                        for index in 0..<emoji_themes[theme_id].theme_cards.count {
+                            emoji_themes[theme_id].theme_cards[index].isFaceUp = false
+                        }
+                        indexOfTheOneAndOnlyFaceUpCard = chosenIndex
+                    }
+                    emoji_themes[theme_id].theme_cards[chosenIndex].isFaceUp.toggle()
+                }
+                
+                //Check if game is finished
+                var game_is_finished = true
+                for index in 0..<emoji_themes[theme_id].theme_cards.count {
+                    if emoji_themes[theme_id].theme_cards[index].isFaceUp == false {
+                        game_is_finished = false
+                    }
+                }
+                if game_is_finished {
+                    new_game_with_id(id: theme_id)
+                }
             }
-        }
-        if game_is_finished {
-            new_game_with_id(id: theme_id)
         }
     }
     
@@ -651,6 +705,32 @@ struct MemoryGame {
             emoji_themes[id].theme_cards[index].isMatched = false
             emoji_themes[id].theme_cards[index].isSeen = false
             emoji_themes[id].theme_cards[index].content = create_card_content(index: Int(index_loc) / 2)
+        }
+        indexOfTheOneAndOnlyFaceUpCard = nil
+    }
+    
+    mutating func new_game_with_name(theme_name: String) {
+
+        score = 0
+        
+        let num_themes_loc = emoji_themes.count
+        var theme_index: Int = 0
+        for theme_index_loc in 0..<num_themes_loc {
+            if theme_name == emoji_themes[theme_index_loc].theme_name {
+                theme_index = theme_index_loc
+            }
+        }
+        
+        theme = theme_index
+        
+        numberOfCards = emoji_themes[theme_index].emojis_str.count * 2
+        let randArray = MemorizeExt.get_unique_random_array(size: numberOfCards)
+        for index in 0..<numberOfCards {
+            let index_loc = randArray[index]
+            emoji_themes[theme_index].theme_cards[index].isFaceUp = false
+            emoji_themes[theme_index].theme_cards[index].isMatched = false
+            emoji_themes[theme_index].theme_cards[index].isSeen = false
+            emoji_themes[theme_index].theme_cards[index].content = create_card_content(index: Int(index_loc) / 2)
         }
         indexOfTheOneAndOnlyFaceUpCard = nil
     }

@@ -19,7 +19,7 @@ struct ContentView: View {
             NavigationView {
                 List {
                     ForEach(viewModel.get_emoji_themes()) { emoji_theme in
-                        NavigationLink(destination: Game(viewModel: viewModel, theme_id: emoji_theme.id)) {
+                        NavigationLink(destination: Game(viewModel: viewModel, theme_id: emoji_theme.id, theme_name: emoji_theme.theme_name)) {
                             VStack {
                                 Text(emoji_theme.theme_name)
                                 Text(String(emoji_theme.emojis_str))
@@ -72,6 +72,7 @@ struct ContentView: View {
             NavigationView {
                 List {
                     ForEach(viewModel.get_emoji_themes()) { emoji_theme in
+                        
                         VStack {
                             Text(emoji_theme.theme_name)
                             Text(String(emoji_theme.emojis_str))
