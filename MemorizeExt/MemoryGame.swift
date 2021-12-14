@@ -478,6 +478,7 @@ struct MemoryGame {
     }
     
     mutating func choose(theme_id: Int, _ card: Card) {
+        theme = theme_id
         if let chosenIndex = index(theme_id: theme_id, of: card),
            !emoji_themes[theme_id].theme_cards[chosenIndex].isFaceUp,
             !emoji_themes[theme_id].theme_cards[chosenIndex].isMatched {
@@ -506,6 +507,17 @@ struct MemoryGame {
                 indexOfTheOneAndOnlyFaceUpCard = chosenIndex
             }
             emoji_themes[theme_id].theme_cards[chosenIndex].isFaceUp.toggle()
+        }
+        
+        //Check if game is finished
+        var game_is_finished = true
+        for index in 0..<emoji_themes[theme_id].theme_cards.count {
+            if emoji_themes[theme_id].theme_cards[index].isFaceUp == false {
+                game_is_finished = false
+            }
+        }
+        if game_is_finished {
+            new_game_with_id(id: theme_id)
         }
     }
     
@@ -543,10 +555,10 @@ struct MemoryGame {
         let randArray = get_unique_random_array(size: numberOfCards)
         for index in 0..<numberOfCards {
             let index_loc = randArray[index]
-            cards[index].isFaceUp = false
-            cards[index].isMatched = false
-            cards[index].isSeen = false
-            cards[index].content = create_card_content(index: Int(index_loc) / 2)
+            emoji_themes[theme].theme_cards[index].isFaceUp = false
+            emoji_themes[theme].theme_cards[index].isMatched = false
+            emoji_themes[theme].theme_cards[index].isSeen = false
+            emoji_themes[theme].theme_cards[index].content = create_card_content(index: Int(index_loc) / 2)
         }
         indexOfTheOneAndOnlyFaceUpCard = nil
     }
@@ -554,14 +566,14 @@ struct MemoryGame {
     mutating func new_game_with_id(id: Int) {
         theme = id
         score = 0
-        numberOfCards = emoji_themes[theme].emojis_str.count * 2
+        numberOfCards = emoji_themes[id].emojis_str.count * 2
         let randArray = get_unique_random_array(size: numberOfCards)
         for index in 0..<numberOfCards {
             let index_loc = randArray[index]
-            cards[index].isFaceUp = false
-            cards[index].isMatched = false
-            cards[index].isSeen = false
-            cards[index].content = create_card_content(index: Int(index_loc) / 2)
+            emoji_themes[id].theme_cards[index].isFaceUp = false
+            emoji_themes[id].theme_cards[index].isMatched = false
+            emoji_themes[id].theme_cards[index].isSeen = false
+            emoji_themes[id].theme_cards[index].content = create_card_content(index: Int(index_loc) / 2)
         }
         indexOfTheOneAndOnlyFaceUpCard = nil
     }
