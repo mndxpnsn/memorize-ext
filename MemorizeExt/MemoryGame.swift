@@ -517,7 +517,17 @@ struct MemoryGame {
             card_array_loc.append(card_loc)
         }
         
-        emoji_themes[theme].theme_cards = card_array_loc
+        var card_array_reordered: [Card] = [Card]()
+        
+        let num_cards_in_arr = card_str_array.count * 2
+        let randArray = MemorizeExt.get_unique_random_array(size: num_cards_in_arr)
+        for index in 0..<num_cards_in_arr {
+            let index_loc = randArray[index]
+            let card_loc = card_array_loc[index_loc]
+            card_array_reordered.append(card_loc)
+        }
+        
+        emoji_themes[theme].theme_cards = card_array_reordered
         emoji_themes_glb = emoji_themes
         save_state()
     }
