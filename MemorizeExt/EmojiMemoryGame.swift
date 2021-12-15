@@ -74,10 +74,6 @@ class EmojiMemoryGame: ObservableObject {
     }
     
     @Published private(set) var model: MemoryGame = createMemoryGame()
-
-    var cards: Array<Card> {
-        return model.cards
-    }
     
     // MARK: - Intent(s)
     func choose(theme_name: String, _ card: Card) {
