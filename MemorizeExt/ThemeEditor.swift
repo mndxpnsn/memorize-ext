@@ -60,17 +60,19 @@ struct ThemeEditor: View {
         Section(header: Text("Remove Emoji")) {
             let theme_id = viewModel.get_theme()
             let emojis = viewModel.get_emojis_of_theme(theme_id: theme_id)
-            LazyHGrid(rows: [GridItem(.adaptive(minimum: 40))]) {
-                ForEach(Array(emojis), id: \.self) { emoji in
-                    Text(String(emoji))
-                        .onTapGesture {
-                            withAnimation {
-                                viewModel.remove_emoji(emoji: (emoji))
+            ScrollView {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 40))]) {
+                    ForEach(Array(emojis), id: \.self) { emoji in
+                        Text(String(emoji))
+                            .onTapGesture {
+                                withAnimation {
+                                    viewModel.remove_emoji(emoji: (emoji))
+                                }
                             }
-                        }
+                    }
                 }
+                .font(.system(size: 40))
             }
-            .font(.system(size: 40))
         }
     }
     
