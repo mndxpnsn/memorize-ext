@@ -44,6 +44,7 @@ struct ThemeEditor: View {
     func addEmojis(_ emojis: String) {
         withAnimation {
             let theme_id = viewModel.get_theme()
+            print("theme_id in addemojis \(theme_id)")
             viewModel.add_emojis(theme: theme_id, emojis_str: emojis)
         }
     }

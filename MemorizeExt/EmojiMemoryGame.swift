@@ -96,6 +96,10 @@ class EmojiMemoryGame: ObservableObject {
         model.new_game()
     }
     
+    func set_new_game_with_name(theme_name: String) {
+        model.new_game_with_name(theme_name: theme_name)
+    }
+    
     func add_new_theme() {
         model.add_new_theme()
     }
@@ -114,6 +118,10 @@ class EmojiMemoryGame: ObservableObject {
     
     func get_theme() -> Int {
         return model.get_theme()
+    }
+    
+    func set_theme_with_name(theme_name: String) {
+        model.set_theme_with_name(theme_name: theme_name)
     }
     
     func get_theme_color() -> Color {
