@@ -96,13 +96,30 @@ func add_theme(emojis: Array<String>, num_pairs: Int, theme_name: String) {
         emojis_loc.emojis_str = emojis_loc.emojis_str + emojis[index]
     }
     
+    
+    //
+    
+    //
+    
+    
+    
     for index in 0..<(num_pairs * 2) {
         let card_content_loc = convert_emojis_str_to_cards(emojis: emojis_loc.emojis_str)
         let card_loc = Card(isFaceUp: false, isMatched: false, isSeen: false, content: card_content_loc[index/2], id: index)
         card_array.append(card_loc)
     }
     
-    emojis_loc.theme_cards = card_array
+    var card_array_reordered: [Card] = [Card]()
+    
+    let num_cards_in_arr = num_pairs * 2
+    let randArray = get_unique_random_array(size: num_cards_in_arr)
+    for index in 0..<num_cards_in_arr {
+        let index_loc = randArray[index]
+        let card_loc = card_array[index_loc]
+        card_array_reordered.append(card_loc)
+    }
+    
+    emojis_loc.theme_cards = card_array_reordered
     max_theme_color_id = theme_counter
 
     emoji_themes_glb.append(emojis_loc)
@@ -264,7 +281,6 @@ struct file_struct {
 let color: Int = 0
 
 struct MemoryGame {
-    private(set) var cards: Array<Card>
     
     private var indexOfTheOneAndOnlyFaceUpCard: Int?
     private var numberOfCards: Int
@@ -407,6 +423,8 @@ struct MemoryGame {
     }
     
     mutating func add_emojis(theme_id: Int, emojis_str: String) {
+        print("theme_id: \(theme_id)")
+        print("theme: \(theme)")
         withAnimation {
             emoji_themes[theme].emojis_str = (emojis_str + emoji_themes[theme].emojis_str)
         }
@@ -591,18 +609,8 @@ struct MemoryGame {
     }
 
     init(numberOfPairsOfCards: Int, createCardContent: (Int) -> String) {
-        cards = Array<Card>()
         numberOfCards = 2 * numberOfPairsOfCards
         score = 0
-
-        let randArray = MemorizeExt.get_unique_random_array(size: numberOfCards)
-        
-        for index in 0..<numberOfCards {
-            let index_loc = randArray[index]
-            let pairIndex = index_loc / 2
-            let content: String = createCardContent(pairIndex)
-            cards.append(Card(content: content, id: index))
-        }
         
         if state_read == false {
             read_state()
@@ -674,26 +682,12 @@ struct MemoryGame {
         return nil
     }
     
-    mutating func new_cards(num_cards: Int, createCardContent: (Int) -> String) {
-        cards = Array<Card>()
-        numberOfCards = num_cards
-        
-        let randArray = MemorizeExt.get_unique_random_array(size: num_cards)
-        
-        for index in 0..<num_cards {
-            let index_loc = randArray[index]
-            let pairIndex = index_loc / 2
-            let content: String = createCardContent(pairIndex)
-            cards.append(Card(content: content, id: index))
-        }
-    }
-    
     mutating func new_game() {
         
         score = 0
-        numberOfCards = emoji_themes[theme].emojis_str.count * 2
-        let randArray = MemorizeExt.get_unique_random_array(size: numberOfCards)
-        for index in 0..<numberOfCards {
+        let num_of_cards_loc = emoji_themes[theme].emojis_str.count * 2
+        let randArray = MemorizeExt.get_unique_random_array(size: num_of_cards_loc)
+        for index in 0..<num_of_cards_loc {
             let index_loc = randArray[index]
             emoji_themes[theme].theme_cards[index].isFaceUp = false
             emoji_themes[theme].theme_cards[index].isMatched = false
@@ -706,9 +700,9 @@ struct MemoryGame {
     mutating func new_game_with_id(id: Int) {
         theme = id
         score = 0
-        numberOfCards = emoji_themes[id].emojis_str.count * 2
-        let randArray = MemorizeExt.get_unique_random_array(size: numberOfCards)
-        for index in 0..<numberOfCards {
+        let num_of_cards_loc = emoji_themes[id].emojis_str.count * 2
+        let randArray = MemorizeExt.get_unique_random_array(size: num_of_cards_loc)
+        for index in 0..<num_of_cards_loc {
             let index_loc = randArray[index]
             emoji_themes[id].theme_cards[index].isFaceUp = false
             emoji_themes[id].theme_cards[index].isMatched = false
