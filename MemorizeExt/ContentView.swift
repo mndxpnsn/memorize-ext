@@ -19,7 +19,7 @@ struct ContentView: View {
             NavigationView {
                 List {
                     ForEach(viewModel.get_emoji_themes()) { emoji_theme in
-                        NavigationLink(destination: Game(viewModel: viewModel, theme_id: emoji_theme.id, theme_name: emoji_theme.theme_name)) {
+                        NavigationLink(destination: Game(viewModel: viewModel, theme_name: emoji_theme.theme_name)) {
                             VStack {
                                 Text(emoji_theme.theme_name)
                                 Text(String(emoji_theme.emojis_str))
@@ -85,7 +85,7 @@ struct ContentView: View {
                         .padding()
                         .onTapGesture {
                             managing = true
-                            set_theme(id: emoji_theme.id)
+                            set_theme_with_name(theme_name: emoji_theme.theme_name)
                         }
                     }
                     .onDelete { indexSet in
@@ -140,8 +140,9 @@ struct ContentView: View {
         return Text(prefix + suffix)
     }
     
-    func set_theme(id: Int) {
-        viewModel.set_theme(id: id)
+    func set_theme_with_name(theme_name: String) {
+        print("set_theme_with_name")
+        viewModel.set_theme_with_name(theme_name: theme_name)
     }
     
     func add_new_theme() {

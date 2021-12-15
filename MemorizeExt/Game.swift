@@ -9,13 +9,12 @@ import SwiftUI
 
 struct Game: View {
     @ObservedObject var viewModel: EmojiMemoryGame
-    @State var theme_id: Int
     @State var theme_name: String
     
     var body: some View {
         let color = get_color_of_theme_with_name(theme_name: theme_name)
+        let theme_name = viewModel.get_theme_name_with(theme_name: theme_name)
         VStack {
-            let theme_name = viewModel.get_theme_name_with(theme_name: theme_name)
             Text(theme_name)
             ScrollView {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 75))]) {
@@ -32,9 +31,13 @@ struct Game: View {
             .padding(.horizontal)
 
             HStack {
-                Button(action: myAction, label: myLabel)
-                Spacer()
-                game_score()
+                Button(action: {
+                    set_new_game_with_name(theme_name: theme_name)
+                }) {
+                    myLabel()
+                    Spacer()
+                    game_score()
+                }
             }
             .padding(.horizontal)
             .padding(.vertical)
@@ -86,8 +89,8 @@ struct Game: View {
         viewModel.new_game()
     }
     
-    func set_new_game(theme: Int) -> Void {
-        viewModel.new_game_with_id(id: theme)
+    func set_new_game_with_name(theme_name: String) -> Void {
+        viewModel.new_game_with_name(theme_name: theme_name)
     }
     
     func myLabel () -> Text {

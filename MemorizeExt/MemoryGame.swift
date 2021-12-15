@@ -408,22 +408,49 @@ struct MemoryGame {
     
     mutating func add_emojis(theme_id: Int, emojis_str: String) {
         withAnimation {
-            emoji_themes[theme_id].emojis_str = (emojis_str + emoji_themes[theme_id].emojis_str)
+            emoji_themes[theme].emojis_str = (emojis_str + emoji_themes[theme].emojis_str)
         }
-        let num_emoji = emoji_themes[theme_id].emojis_str.count
+        let num_emoji = emoji_themes[theme].emojis_str.count
         remove_repeating_emoji(num_emoji: num_emoji)
         
-        let card_array_add = convert_emojis_str_to_cards(emojis: emojis_str)
-        let size_card_arr = card_array_add.count
+        let card_array_add = convert_emojis_str_to_cards(emojis: emoji_themes[theme].emojis_str)
+        let size_card_arr = card_array_add.count * 2
+        
+        var result: [Card] = [Card]()
+        
         
         for card_index in 0..<size_card_arr {
-            let max_index_loc = emoji_themes[theme_id].theme_cards.count
-            var card_loc: Card = Card(isFaceUp: false, isMatched: false, isSeen: false, content: card_array_add[card_index], id: max_index_loc)
-            card_loc.content = card_array_add[card_index]
-            emoji_themes[theme_id].theme_cards.append(card_loc)
+            var card_loc: Card = Card(isFaceUp: false, isMatched: false, isSeen: false, content: card_array_add[card_index/2], id: card_index)
+            card_loc.content = card_array_add[card_index/2]
+            result.append(card_loc)
         }
         
+        let randArray = MemorizeExt.get_unique_random_array(size: size_card_arr)
+        
+        var result_reordered: [Card] = [Card]()
+        
+        for index in 0..<size_card_arr {
+            let index_loc = randArray[index]
+            let card_loc = result[index_loc]
+            result_reordered.append(card_loc)
+        }
+        
+        emoji_themes[theme].theme_cards = result_reordered
+        emoji_themes_glb = emoji_themes
+        
         save_state()
+    }
+    
+    mutating func set_theme_with_name(theme_name: String) {
+        let num_themes_loc = emoji_themes.count
+        
+        for theme_index in 0..<num_themes_loc {
+            if emoji_themes[theme_index].theme_name == theme_name {
+                theme = theme_index
+            }
+        }
+        
+        print(theme)
     }
     
     mutating func change_to_name(theme: Int, text: String) {
@@ -473,7 +500,7 @@ struct MemoryGame {
         }
         
         emoji_themes[theme].theme_cards = card_array_loc
-        
+        emoji_themes_glb = emoji_themes
         save_state()
     }
     
@@ -498,6 +525,7 @@ struct MemoryGame {
         }
         
         emoji_themes[theme].emojis_str = emojis_loc
+        emoji_themes_glb = emoji_themes
     }
 
     // MARK: - Intent(s)
@@ -510,6 +538,8 @@ struct MemoryGame {
         let new_theme = Theme(emojis_str: "", theme_color: theme_color_loc, theme_name: "", id: num_themes, theme_color_id: max_color_id + 1, theme_cards: card_array)
         emoji_themes.append(new_theme)
         theme_colors.append(theme_color_loc)
+        
+        emoji_themes_glb = emoji_themes
         
         save_state()
     }
@@ -527,6 +557,8 @@ struct MemoryGame {
     }
     
     func get_theme() -> Int {
+        print("get_theme")
+        print(theme)
         return theme
     }
     
@@ -625,17 +657,6 @@ struct MemoryGame {
                     }
                     emoji_themes[theme_id].theme_cards[chosenIndex].isFaceUp.toggle()
                 }
-                
-                //Check if game is finished
-                var game_is_finished = true
-                for index in 0..<emoji_themes[theme_id].theme_cards.count {
-                    if emoji_themes[theme_id].theme_cards[index].isFaceUp == false {
-                        game_is_finished = false
-                    }
-                }
-                if game_is_finished {
-                    new_game_with_id(id: theme_id)
-                }
             }
         }
     }
@@ -645,7 +666,7 @@ struct MemoryGame {
     }
     
     func index(theme_id: Int, of card: Card) -> Int? {
-        for index in 0..<cards.count {
+        for index in 0..<emoji_themes[theme_id].theme_cards.count {
             if emoji_themes[theme_id].theme_cards[index].id == card.id {
                 return index
             }
