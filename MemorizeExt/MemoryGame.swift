@@ -66,7 +66,7 @@ func create_card_content2(theme_id: Int, index: Int) -> String {
 
 func createMemoryGame() -> MemoryGame {
     if state_read == false {
-//        read_state()
+        read_state()
         state_read = true
     }
     if emoji_themes_glb.isEmpty {
@@ -435,7 +435,7 @@ struct MemoryGame {
             result_reordered.append(card_loc)
         }
         
-        emoji_themes[theme].theme_cards = result_reordered        
+        emoji_themes[theme].theme_cards = result_reordered
         emoji_themes_glb = emoji_themes
         
         save_state()
@@ -605,7 +605,7 @@ struct MemoryGame {
         }
         
         if state_read == false {
-//            read_state()
+            read_state()
             state_read = true
         }
         if emoji_themes_glb.isEmpty {
