@@ -85,6 +85,7 @@ struct ContentView: View {
                         .padding()
                         .onTapGesture {
                             managing = true
+                            //Set theme var in model
                             set_theme_with_name(theme_name: emoji_theme.theme_name)
                         }
                     }
