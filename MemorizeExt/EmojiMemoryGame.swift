@@ -62,7 +62,6 @@ class EmojiMemoryGame: ObservableObject {
         model.remove_emoji(emoji: emoji)
     }
     
-    // MARK: - Intent(s)
     func choose(theme_name: String, _ card: Card) {
         model.choose(theme_name: theme_name, card)
     }

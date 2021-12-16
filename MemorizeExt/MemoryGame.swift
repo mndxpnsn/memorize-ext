@@ -166,10 +166,7 @@ struct MemoryGame {
         
         let card_array_add = convert_emojis_str_to_cards(emojis: emoji_themes[theme_id].emojis_str)
         let size_card_arr = card_array_add.count * 2
-        
         var result: [Card] = [Card]()
-        
-        
         for card_index in 0..<size_card_arr {
             var card_loc: Card = Card(isFaceUp: false, isMatched: false, isSeen: false, content: card_array_add[card_index/2], id: card_index)
             card_loc.content = card_array_add[card_index/2]
@@ -177,9 +174,7 @@ struct MemoryGame {
         }
         
         let randArray = MemorizeExt.get_unique_random_array(size: size_card_arr)
-        
         var result_reordered: [Card] = [Card]()
-        
         for index in 0..<size_card_arr {
             let index_loc = randArray[index]
             let card_loc = result[index_loc]
@@ -203,7 +198,6 @@ struct MemoryGame {
     
     mutating func change_to_name(theme_id: Int, text: String) {
         emoji_themes[theme_id].theme_name = text
-        
         save_state()
     }
     
@@ -283,8 +277,6 @@ struct MemoryGame {
         
         emoji_themes[theme_id].emojis_str = emojis_loc
     }
-
-    // MARK: - Intent(s)
     
     mutating func add_new_theme() {
         let num_themes = emoji_themes.count
@@ -332,7 +324,6 @@ struct MemoryGame {
             if emoji_themes[theme_index_loc].theme_name == theme_name {
                 let theme_id = theme_index_loc
                 
-                theme = theme_id
                 if let chosenIndex = index(theme_id: theme_id, of: card),
                    !emoji_themes[theme_id].theme_cards[chosenIndex].isFaceUp,
                     !emoji_themes[theme_id].theme_cards[chosenIndex].isMatched {
@@ -383,6 +374,7 @@ struct MemoryGame {
 
         score = 0
         
+        //Get theme index
         let num_themes_loc = emoji_themes.count
         var theme_index: Int = 0
         for theme_index_loc in 0..<num_themes_loc {
@@ -391,8 +383,7 @@ struct MemoryGame {
             }
         }
         
-        theme = theme_index
-        
+        //Reset cards
         let num_cards_loc = emoji_themes[theme_index].emojis_str.count * 2
         let randArray = MemorizeExt.get_unique_random_array(size: num_cards_loc)
         for index in 0..<num_cards_loc {
