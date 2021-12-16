@@ -15,7 +15,7 @@ var theme_counter: Int = 0
 var max_theme_color_id: Int = 0
 var emoji_themes_glb: [Theme] = [Theme]()
 
-struct Card: Identifiable, Codable {
+struct Card: Identifiable {
     var isFaceUp: Bool = false
     var isMatched: Bool = false
     var isSeen: Bool = false
@@ -50,17 +50,8 @@ func set_emoji_themes() {
 }
 
 func createMemoryGame() -> MemoryGame {
-    if state_read == false {
-        read_state()
-        state_read = true
-    }
-    if emoji_themes_glb.isEmpty {
-        if init_set == false {
-            set_emoji_themes()
-            init_set = true
-        }
-        
-    }
+    
+    read_in_data()
 
     return MemoryGame()
 }
