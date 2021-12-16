@@ -18,16 +18,7 @@ struct MemoryGame {
         score = 0
         theme = 0
         
-        if state_read == false {
-            read_state()
-            state_read = true
-        }
-        if emoji_themes_glb.isEmpty {
-            if init_set == false {
-                set_emoji_themes()
-                init_set = true
-            }
-        }
+        read_in_data()
         
         emoji_themes = emoji_themes_glb
         
