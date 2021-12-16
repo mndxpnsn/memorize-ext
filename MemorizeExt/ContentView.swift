@@ -133,64 +133,12 @@ struct ContentView: View {
         viewModel.move_theme_to(fromOffsets: fromOffsets, toOffset: toOffset)
     }
     
-    func theme_title() -> Text {
-        let theme = viewModel.get_theme() + 1
-        let prefix = "Theme: "
-        let suffix = String(theme)
-        return Text(prefix + suffix)
-    }
-    
     func set_theme_with_name(theme_name: String) {
-        print("set_theme_with_name")
         viewModel.set_theme_with_name(theme_name: theme_name)
     }
     
     func add_new_theme() {
         viewModel.add_new_theme()
-    }
-    
-    func theme_title_with(id: Int) -> Text {
-        let theme = id
-        let prefix = "Theme: "
-        let suffix = String(theme)
-        return Text(prefix + suffix)
-    }
-    
-    func game_score() -> Text {
-        let score = viewModel.get_score()
-        let prefix = "Score: "
-        let suffix = String(score)
-        return Text(prefix + suffix)
-    }
-    
-    func get_theme_color() -> Color {
-        return viewModel.get_theme_color()
-    }
-    
-    func get_theme() -> Int {
-        return viewModel.get_theme()
-    }
-
-    func get_actual_theme() -> Theme {
-        return viewModel.get_actual_theme()
-    }
-    
-    func get_color_of_theme_with(id: Int) -> Color {
-        return viewModel.get_color_of_theme_with(id: id)
-    }
-    
-    func myAction () -> Void {
-        viewModel.new_game()
-    }
-    
-    func set_new_game(theme: Int) -> Void {
-        viewModel.save_state()
-        viewModel.set_theme(id: theme)
-        viewModel.new_game_with_id(id: theme)
-    }
-    
-    func myLabel () -> Text {
-        return Text("New Game")
     }
 }
 

@@ -52,7 +52,7 @@ struct ThemeEditor: View {
     func change_to_name(text: String) {
         withAnimation {
             let theme_id = viewModel.get_theme()
-            viewModel.change_to_name(theme: theme_id, text: text)
+            viewModel.change_to_name(theme_id: theme_id, text: text)
         }
     }
     
