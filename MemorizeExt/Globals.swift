@@ -2,7 +2,7 @@
 //  Globals.swift
 //  MemorizeExt
 //
-//  Created by Derek Harrison on 15/12/2021.
+//  Created by mndx on 15/12/2021.
 //
 
 import Foundation
