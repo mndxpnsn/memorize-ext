@@ -44,26 +44,8 @@ struct Game: View {
         }
     }
     
-    func theme_title() -> Text {
-        let theme = viewModel.get_theme() + 1
-        let prefix = "Theme: "
-        let suffix = String(theme)
-        return Text(prefix + suffix)
-    }
-    
-    func set_theme(id: Int) -> Void {
-        viewModel.set_theme(id: id)
-    }
-    
     func get_theme_name_with(theme_name: String) -> Text {
         return Text(viewModel.get_theme_name_with(theme_name: theme_name))
-    }
-    
-    func theme_title_with(id: Int) -> Text {
-        let theme = id
-        let prefix = "Theme: "
-        let suffix = String(theme)
-        return Text(prefix + suffix)
     }
     
     func game_score() -> Text {
@@ -73,20 +55,8 @@ struct Game: View {
         return Text(prefix + suffix)
     }
     
-    func get_theme_color() -> Color {
-        return viewModel.get_theme_color()
-    }
-
-    func get_color_of_theme_with(id: Int) -> Color {
-        return viewModel.get_color_of_theme_with(id: id)
-    }
-    
     func get_color_of_theme_with_name(theme_name: String) -> Color {
         return viewModel.get_color_of_theme_with_name(theme_name: theme_name)
-    }
-    
-    func myAction () -> Void {
-        viewModel.new_game()
     }
     
     func set_new_game_with_name(theme_name: String) -> Void {
