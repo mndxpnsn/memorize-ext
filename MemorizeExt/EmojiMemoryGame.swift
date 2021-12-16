@@ -12,18 +12,8 @@ class EmojiMemoryGame: ObservableObject {
     
     @Published private(set) var model: MemoryGame = createMemoryGame()
     
-    init() {
-        if state_read == false {
-            read_state()
-            state_read = true
-        }
-        if emoji_themes_glb.isEmpty {
-            if init_set == false {
-                set_emoji_themes()
-                init_set = true
-            }
-        }
-        
+    init() {        
+        read_in_data()
         save_state()
     }
     

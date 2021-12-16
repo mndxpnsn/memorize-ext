@@ -65,6 +65,19 @@ func createMemoryGame() -> MemoryGame {
     return MemoryGame()
 }
 
+func read_in_data() {
+    if state_read == false {
+        read_state()
+        state_read = true
+    }
+    if emoji_themes_glb.isEmpty {
+        if init_set == false {
+            set_emoji_themes()
+            init_set = true
+        }
+    }
+}
+
 func add_theme(emojis: Array<String>, num_pairs: Int, theme_name: String) {
 
     var emojis_loc = Theme(emojis_str: "", theme_color: Color.cyan, theme_name: theme_name, id: theme_counter, theme_color_id: theme_counter, theme_cards: [Card]())
